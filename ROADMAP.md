@@ -32,6 +32,10 @@
 - 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
 - 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
 
+## 内容记录
+
+- 2026-07-03：首批 6 篇文章上线，源自私有仓库 personal-development 的笔记加工：adb 速查（精选重写并注明参考 awesome-adb）、Android 混淆、颜色透明度对照表、Android 工具箱（合并 3 篇笔记）、Mac 软件清单（合并 2 篇，JDK 配置更新为 zsh）、编程字体。按用户反馈统一调整为幽默风趣的文风（该偏好已存入记忆）。Git 命令笔记因内容过薄且含真实邮箱未发布；Mac软件激活码.md 按用户要求忽略。
+
 ## CI 踩坑记录（2026-07-03 发布时）
 
 1. **package-lock.json 锁了公司内网镜像**：本地 npm registry 是 `registry.m.jd.com`（京东内网），lockfile 里 245 个 resolved URL GitHub runner 访问不到，`npm ci` 卡 8 分钟后以 npm 自身 bug（"Exit handler never called"，且退出码为 0）的形式崩掉。修复：`rm -rf node_modules package-lock.json && npm install --registry=https://registry.npmjs.org/` 重新生成。**以后更新依赖后必须检查 lockfile 里没有 jd.com 地址再提交。**
