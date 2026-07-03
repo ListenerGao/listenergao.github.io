@@ -35,7 +35,7 @@
 ## CI 踩坑记录（2026-07-03 发布时）
 
 1. **package-lock.json 锁了公司内网镜像**：本地 npm registry 是 `registry.m.jd.com`（京东内网），lockfile 里 245 个 resolved URL GitHub runner 访问不到，`npm ci` 卡 8 分钟后以 npm 自身 bug（"Exit handler never called"，且退出码为 0）的形式崩掉。修复：`rm -rf node_modules package-lock.json && npm install --registry=https://registry.npmjs.org/` 重新生成。**以后更新依赖后必须检查 lockfile 里没有 jd.com 地址再提交。**
-2. **Pages 部署秒失败（"Deployment failed, try again later"）**：legacy → workflow 模式切换后 Pages 内部状态卡住，artifact 正常但后端秒拒，重试无效。修复：`gh api -X PUT .../pages -f build_type=legacy` 再切回 `workflow`，来回一次后部署立即成功。
+2. **Pages 部署偶发秒失败（"Deployment failed, try again later"，无错误详情）**：GitHub Pages 后端问题，首次尝试大概率失败、重跑即成功（当天复现 3 次；一度误判为 legacy→workflow 切换导致，后经对照实验排除）。修复：workflow 的 deploy 步骤加 `continue-on-error` + 失败时自动重试一次，流水线自愈，已验证生效。
 3. workflow 用 Node 22（Node 20 在 runner 上已弃用）。
 
 - 2026-07-03：**发布上线**。commit `48ba7a8`（重建）+ `f8fc260`（Node 22）+ `c133b4b`（lockfile 换官方源），Actions 构建部署成功
