@@ -25,14 +25,21 @@
 
 ## 进行中
 
-- 本地验证（`npx hexo generate` + `npx hexo server` 预览）
+- 无
 
 ## 待办
 
-- 用户确认后 push 发布，验证 Actions 构建和线上站点
-- 站点信息完善（title/slogan/头像等占位内容待用户自定义）
+- 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
+- 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
+
+## CI 踩坑记录（2026-07-03 发布时）
+
+1. **package-lock.json 锁了公司内网镜像**：本地 npm registry 是 `registry.m.jd.com`（京东内网），lockfile 里 245 个 resolved URL GitHub runner 访问不到，`npm ci` 卡 8 分钟后以 npm 自身 bug（"Exit handler never called"，且退出码为 0）的形式崩掉。修复：`rm -rf node_modules package-lock.json && npm install --registry=https://registry.npmjs.org/` 重新生成。**以后更新依赖后必须检查 lockfile 里没有 jd.com 地址再提交。**
+2. **Pages 部署秒失败（"Deployment failed, try again later"）**：legacy → workflow 模式切换后 Pages 内部状态卡住，artifact 正常但后端秒拒，重试无效。修复：`gh api -X PUT .../pages -f build_type=legacy` 再切回 `workflow`，来回一次后部署立即成功。
+3. workflow 用 Node 22（Node 20 在 runner 上已弃用）。
+
+- 2026-07-03：**发布上线**。commit `48ba7a8`（重建）+ `f8fc260`（Node 22）+ `c133b4b`（lockfile 换官方源），Actions 构建部署成功
 
 ## 最近验证
 
-- 2026-07-03：Pages build_type 已确认为 workflow（gh api 返回）
-- 构建和线上部署尚未验证
+- 2026-07-03：线上验证通过——首页/关于/文章/归档均返回 200，标题和中文语言正确，关于页截图确认头像、微信/GitHub 图标正常渲染
