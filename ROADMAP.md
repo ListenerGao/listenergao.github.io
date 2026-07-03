@@ -38,6 +38,7 @@
 - https://listenergao.github.io 由 GitHub Actions + Pages 继续部署，作为免费冗余，GitHub Pages 侧未绑定自定义域名
 - `_config.yml` url 已改为主域名；安装 hexo-generator-sitemap / hexo-generator-feed 生成 /sitemap.xml 和 /atom.xml
 - favicon（icon_tab.png）已改为圆形（PIL 圆形遮罩 + 抗锯齿，原方图在 git 历史）
+- 2026-07-03：Google Search Console 已接入——网址前缀资源 `https://www.listenergao.com/`，HTML 文件验证（`source/googlef66ea2b3d8b6ae1d.html`，_config.yml 已配 skip_render，此文件不可删），sitemap.xml 已提交成功，等待 Google 抓取收录
 
 ## 内容记录
 
