@@ -1,0 +1,45 @@
+# Fluid 主题覆盖配置
+# 只写需要覆盖的项，完整默认配置见 node_modules/hexo-theme-fluid/_config.yml
+# 文档: https://hexo.fluid-dev.com/docs/guide/
+
+# 浏览器标签页图标（旧站原图 icon_tab.png）
+favicon: /img/icon_tab.png
+apple_touch_icon: /img/icon_tab.png
+
+navbar:
+  blog_title: ListenerGao's Blog
+
+index:
+  slogan:
+    enable: true
+    text: 爱生活，爱技术，爱折腾
+
+about:
+  avatar: /img/avatar.jpg
+  name: "ListenerGao"
+  intro: "android developer"
+  icons:
+    - { class: "iconfont icon-github-fill", link: "https://github.com/ListenerGao", tip: "GitHub" }
+    - { class: "iconfont icon-wechat-fill", qrcode: "/img/wechat.png" }
+
+# 页脚：总访问量 + 总访客数（数据源不蒜子，本地预览时数字异常偏大是正常现象，部署后正常）
+footer:
+  statistics:
+    enable: true
+    source: "busuanzi"
+
+post:
+  # 文章页顶部显示阅读次数
+  meta:
+    views:
+      enable: true
+      source: "busuanzi"
+  # 评论：Utterances（基于 GitHub Issues，沿用旧站评论仓库）
+  comments:
+    enable: true
+    type: utterances
+
+utterances:
+  repo: ListenerGao/blog-commit-utterances
+  issue_term: pathname
+  label: utterances
