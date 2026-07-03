@@ -32,6 +32,13 @@
 - 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
 - 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
 
+## 域名与部署架构（2026-07-03 确认）
+
+- 主域名 https://www.listenergao.com 由 **Vercel** 服务（用户在 Vercel 连接本仓库自动构建，DNS 指向 Vercel；裸域名 308 跳 www）
+- https://listenergao.github.io 由 GitHub Actions + Pages 继续部署，作为免费冗余，GitHub Pages 侧未绑定自定义域名
+- `_config.yml` url 已改为主域名；安装 hexo-generator-sitemap / hexo-generator-feed 生成 /sitemap.xml 和 /atom.xml
+- favicon（icon_tab.png）已改为圆形（PIL 圆形遮罩 + 抗锯齿，原方图在 git 历史）
+
 ## 内容记录
 
 - 2026-07-03：首批 6 篇文章上线，源自私有仓库 personal-development 的笔记加工：adb 速查（精选重写并注明参考 awesome-adb）、Android 混淆、颜色透明度对照表、Android 工具箱（合并 3 篇笔记）、Mac 软件清单（合并 2 篇，JDK 配置更新为 zsh）、编程字体。按用户反馈统一调整为幽默风趣的文风（该偏好已存入记忆）。Git 命令笔记因内容过薄且含真实邮箱未发布；Mac软件激活码.md 按用户要求忽略。
