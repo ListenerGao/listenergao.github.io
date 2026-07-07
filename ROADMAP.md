@@ -31,11 +31,13 @@
 
 - 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
 - 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
+- Google 收录跟进：站点 2026-07-03 上线，几天未收录属正常（新站周期 1~4 周）。建议在 Search Console「网址检查」对首页和重点文章手动「请求编入索引」加速；待确认收录后从待办移除
 
 ## 域名与部署架构（2026-07-03 确认）
 
-- 主域名 https://www.listenergao.com 由 **Vercel** 服务（用户在 Vercel 连接本仓库自动构建，DNS 指向 Vercel；裸域名 308 跳 www）
-- https://listenergao.github.io 由 GitHub Actions + Pages 继续部署，作为免费冗余，GitHub Pages 侧未绑定自定义域名
+- 主域名 https://www.listenergao.com 由 **Vercel** 服务（用户在 Vercel 连接本仓库自动构建，DNS 指向 Vercel；裸域名 308 跳 www）。选 Vercel 是为了中国大陆访问速度，DNS 托管在 Spaceship（注册商 NS）
+- https://listenergao.github.io 由 GitHub Actions + Pages 继续部署，作为免费冗余
+- 2026-07-07：GitHub Pages 侧已通过 `gh api` 绑定自定义域名 `www.listenergao.com`（**DNS 未改、仍指向 Vercel**），目的只有一个：让 github.io 全站 301 跳转到主域名，消除双域名重复内容对 SEO 的影响。已验证首页/文章页/sitemap 均 301 生效。**注意：GitHub Pages 设置页会显示 DNS check unsuccessful 警告，属预期，不要移除该域名或去“修复”DNS**
 - `_config.yml` url 已改为主域名；安装 hexo-generator-sitemap / hexo-generator-feed 生成 /sitemap.xml 和 /atom.xml
 - favicon（icon_tab.png）已改为圆形（PIL 圆形遮罩 + 抗锯齿，原方图在 git 历史）
 - 2026-07-03：Google Search Console 已接入——网址前缀资源 `https://www.listenergao.com/`，HTML 文件验证（`source/googlef66ea2b3d8b6ae1d.html`，_config.yml 已配 skip_render，此文件不可删），sitemap.xml 已提交成功，等待 Google 抓取收录
@@ -54,4 +56,5 @@
 
 ## 最近验证
 
+- 2026-07-07：github.io → www 301 跳转验证通过（首页、文章页、sitemap.xml 均 301 至 www.listenergao.com，Fastly 缓存过期后全量生效）；www.listenergao.com 返回 200 不受影响
 - 2026-07-03：线上验证通过——首页/关于/文章/归档均返回 200，标题和中文语言正确，关于页截图确认头像、微信/GitHub 图标正常渲染
