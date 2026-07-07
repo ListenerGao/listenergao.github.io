@@ -3,7 +3,7 @@
 个人博客源码仓库。**源码即仓库**——文章、配置、部署流水线全部在 main 分支，push 即发布。
 
 - **主站**：https://www.listenergao.com （Vercel 构建与托管）
-- **备份站**：https://listenergao.github.io （GitHub Actions 构建，部署到 GitHub Pages）
+- **备份部署**：https://listenergao.github.io （GitHub Actions 构建，部署到 GitHub Pages；对外全站 301 跳转到主站，避免双域名重复内容影响 SEO）
 
 ## 技术栈
 
@@ -16,7 +16,9 @@
 
 ```
 push 到 main ─┬─→ Vercel 自动构建 ──→ www.listenergao.com（主站，DNS 指向 Vercel）
-              └─→ GitHub Actions（.github/workflows/pages.yml）──→ listenergao.github.io（备份）
+              └─→ GitHub Actions（.github/workflows/pages.yml）──→ listenergao.github.io
+                  （备份部署；Pages 设置绑定了自定义域名，使 github.io 301 跳转到主站。
+                   DNS 未指向 GitHub，设置页的 DNS check 警告属预期，勿动）
 ```
 
 ## 本地开发
