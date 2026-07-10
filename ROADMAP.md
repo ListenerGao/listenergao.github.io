@@ -31,7 +31,6 @@
 
 - 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
 - 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
-- Google 收录跟进：站点 2026-07-03 上线，几天未收录属正常（新站周期 1~4 周）。建议在 Search Console「网址检查」对首页和重点文章手动「请求编入索引」加速；待确认收录后从待办移除
 
 ## 域名与部署架构（2026-07-03 确认）
 
@@ -56,5 +55,6 @@
 
 ## 最近验证
 
+- 2026-07-10：Google 收录确认——Search Console「网址检查」显示文章页（/2026/07/03/android-proguard-r8/）已编入索引，HTTPS 正常，收录待办关闭。`site:` 搜索暂查不到属该运算符的正常滞后，以 Search Console 为准
 - 2026-07-07：github.io → www 301 跳转验证通过（首页、文章页、sitemap.xml 均 301 至 www.listenergao.com，Fastly 缓存过期后全量生效）；www.listenergao.com 返回 200 不受影响
 - 2026-07-03：线上验证通过——首页/关于/文章/归档均返回 200，标题和中文语言正确，关于页截图确认头像、微信/GitHub 图标正常渲染
