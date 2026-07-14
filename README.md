@@ -12,6 +12,15 @@
 - 评论：[Utterances](https://utteranc.es/)（基于 GitHub Issues）
 - 统计：[不蒜子](https://busuanzi.ibruce.info/)（页脚访问量 + 文章阅读数）
 
+## 视觉定制
+
+清爽极简风，全站不超过 4 个颜色角色：白/近白底、灰黑文字、青蓝强调色（`#0d9488`，暗色模式 `#2dd4bf`）、浅灰分隔线。改动分两层：
+
+- `_config.fluid.yml`：配色（浅/暗两套）、系统无衬线字体栈（不引入 webfont）、代码高亮 github / github-dark、各页面头图与高度
+- `source/css/custom.css`：主题配置覆盖不到的细节——正文排版（17px / 1.85 行距 / 标题节奏）、代码块与引用块样式、导航栏与主面板阴影、首屏入场动画（遵循 `prefers-reduced-motion`）
+
+头图是手写的浅色单色渐变 SVG（`source/img/banner.svg`），暗色模式下由 custom.css 叠加深色蒙版。调整视觉只需动这三个文件，不要改 `node_modules` 里的主题源码。
+
 ## 部署架构
 
 ```
@@ -37,9 +46,10 @@ npx hexo clean           # 构建异常时清缓存
 |------|------|
 | `source/_posts/` | 文章（Markdown） |
 | `source/about/` | 关于页 |
-| `source/img/` | 站点图片（头像、favicon、微信二维码） |
+| `source/img/` | 站点图片（头像、favicon、微信二维码、头图 banner.svg） |
+| `source/css/custom.css` | 自定义样式（排版细节、首屏动画） |
 | `_config.yml` | Hexo 站点配置 |
-| `_config.fluid.yml` | Fluid 主题覆盖配置 |
+| `_config.fluid.yml` | Fluid 主题覆盖配置（配色、字体、头图） |
 | `.github/workflows/pages.yml` | GitHub Pages 部署流水线 |
 | `ROADMAP.md` | 项目进度与踩坑记录 |
 | `source/google*.html` | Search Console 所有权验证文件，**不可删除** |
