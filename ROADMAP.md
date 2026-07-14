@@ -56,6 +56,7 @@
 
 ## 最近验证
 
+- 2026-07-14：视觉优化上线验证——commit `c4f5b1f` push 后 GitHub Actions Deploy Pages 成功（40s）；Vercel 主域名侧 www.listenergao.com 已生效：/css/custom.css 与 /img/banner.svg 均 200，首页 HTML 已引用新资源，custom.css 含入场动画规则
 - 2026-07-10：Google 收录确认——Search Console「网址检查」显示文章页（/2026/07/03/android-proguard-r8/）已编入索引，HTTPS 正常，收录待办关闭。`site:` 搜索暂查不到属该运算符的正常滞后，以 Search Console 为准
 - 2026-07-07：github.io → www 301 跳转验证通过（首页、文章页、sitemap.xml 均 301 至 www.listenergao.com，Fastly 缓存过期后全量生效）；www.listenergao.com 返回 200 不受影响
 - 2026-07-03：线上验证通过——首页/关于/文章/归档均返回 200，标题和中文语言正确，关于页截图确认头像、微信/GitHub 图标正常渲染
