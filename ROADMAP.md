@@ -18,6 +18,7 @@
 - 2026-07-03：恢复旧站 favicon（`source/img/icon_tab.png`，旧站实际引用的是它而非 favicon.png）
 - 2026-07-03：恢复评论系统 Utterances（仓库 `ListenerGao/blog-commit-utterances`，已确认仓库存在且开放 issues），本地截图验证评论框正常渲染
 - 2026-07-03：统计功能启用（页脚总访问量/总访客数 + 文章阅读次数），数据源用不蒜子 busuanzi。最初恢复了旧站 LeanCloud 配置，但实测该应用已被归档且 LeanCloud 将于 2027 年停服，经用户确认改用 busuanzi（计数从零开始，无历史数据迁移）。本地截图验证页脚计数正常显示（本地数字异常偏大是 busuanzi 已知现象，部署后正常）
+- 2026-07-14：全站视觉优化「清爽极简风」——`_config.fluid.yml` 覆盖配色（#fafafa 底 + teal #0d9488 强调色，浅/暗两套）、系统无衬线字体栈、代码高亮换 github/github-dark；新增 `source/img/banner.svg`（浅色渐变头图替换默认深色风景图，各页面 banner 高度压缩）和 `source/css/custom.css`（正文 17px/1.85 行距、标题节奏、代码块/引用块/导航栏/主面板细节、首屏入场动画：导航下滑/头图缩放沉降/标语与主面板上浮，respect prefers-reduced-motion；主题自带 .fade-in-up 缺时长实际不动已补齐）。配色约束：全站 ≤4 色（白底/灰黑文字/teal 强调/浅灰线），无紫色与彩虹渐变。本地构建通过 + 用户预览确认后发布
 
 ## 阻塞
 

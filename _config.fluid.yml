@@ -9,12 +9,104 @@ apple_touch_icon: /img/icon_tab.png
 navbar:
   blog_title: ListenerGao's Blog
 
+# ---------- 视觉：清爽极简 ----------
+# 白底大留白 + 青蓝（teal）单一强调色，配套细节见 source/css/custom.css
+custom_css:
+  - /css/custom.css
+
+# 全局字体：系统级无衬线栈，中文优先苹方/鸿蒙/雅黑，不引入 webfont
+font:
+  font_family: '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "HarmonyOS Sans SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif'
+
+# 代码高亮：github / github-dark，比默认的 github gist / dark 更干净
+code:
+  highlight:
+    highlightjs:
+      style: "github"
+      style_dark: "github-dark"
+
+color:
+  body_bg_color: "#fafafa"
+  body_bg_color_dark: "#12151c"
+  board_color: "#ffffff"
+  board_color_dark: "#1a1f28"
+  navbar_bg_color: "#ffffff"
+  navbar_bg_color_dark: "#161a22"
+  navbar_text_color: "#1f2937"
+  navbar_text_color_dark: "#cbd5e1"
+  subtitle_color: "#334155"
+  subtitle_color_dark: "#cbd5e1"
+  text_color: "#374151"
+  text_color_dark: "#c2c9d2"
+  sec_text_color: "#6b7280"
+  sec_text_color_dark: "#94a3b8"
+  post_text_color: "#1f2937"
+  post_text_color_dark: "#c2c9d2"
+  post_heading_color: "#111827"
+  post_heading_color_dark: "#e2e8f0"
+  post_link_color: "#0d9488"
+  post_link_color_dark: "#2dd4bf"
+  link_hover_color: "#0f766e"
+  link_hover_color_dark: "#5eead4"
+  link_hover_bg_color: "#f3f4f6"
+  link_hover_bg_color_dark: "#232a35"
+  line_color: "#e5e7eb"
+  line_color_dark: "#2d3440"
+  scrollbar_color: "#d1d5db"
+  scrollbar_color_dark: "#3d4654"
+  scrollbar_hover_color: "#9ca3af"
+  scrollbar_hover_color_dark: "#566072"
+  button_hover_bg_color: "#f3f4f6"
+  button_hover_bg_color_dark: "#243039"
+
+fun_features:
+  progressbar:
+    color: "#0d9488"
+
 index:
+  banner_img: /img/banner.svg
+  # 默认 100 全屏头图，压缩到 60 把首屏留给内容
+  banner_img_height: 60
   slogan:
     enable: true
     text: 爱生活，爱技术，爱折腾
 
+post:
+  banner_img: /img/banner.svg
+  banner_img_height: 40
+  # 文章页顶部显示阅读次数
+  meta:
+    views:
+      enable: true
+      source: "busuanzi"
+  # 评论：Utterances（基于 GitHub Issues，沿用旧站评论仓库）
+  comments:
+    enable: true
+    type: utterances
+
+page:
+  banner_img: /img/banner.svg
+  banner_img_height: 35
+
+archive:
+  banner_img: /img/banner.svg
+  banner_img_height: 45
+
+category:
+  banner_img: /img/banner.svg
+  banner_img_height: 45
+
+tag:
+  banner_img: /img/banner.svg
+  banner_img_height: 45
+
+page404:
+  banner_img: /img/banner.svg
+  banner_img_height: 60
+
 about:
+  banner_img: /img/banner.svg
+  banner_img_height: 45
   avatar: /img/avatar.jpg
   name: "ListenerGao"
   intro: "android developer"
@@ -27,17 +119,6 @@ footer:
   statistics:
     enable: true
     source: "busuanzi"
-
-post:
-  # 文章页顶部显示阅读次数
-  meta:
-    views:
-      enable: true
-      source: "busuanzi"
-  # 评论：Utterances（基于 GitHub Issues，沿用旧站评论仓库）
-  comments:
-    enable: true
-    type: utterances
 
 utterances:
   repo: ListenerGao/blog-commit-utterances
