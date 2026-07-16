@@ -31,14 +31,13 @@
 
 ## 待办
 
-- **Vercel 下线（预计 2026-07-18 后执行）**：等 DNS 全网收敛（迁移后约 48h）再删除 Vercel 项目与域名绑定，删除前先 dig 确认无解析器仍指向 Vercel；期间 push main 会同时触发 Cloudflare Pages / Vercel / GitHub Actions 三个构建，属预期
 - 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
 - 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
 
 ## 域名与部署架构（2026-07-16 更新）
 
 - 主域名 https://www.listenergao.com 由 **Cloudflare Pages** 服务（连接本仓库自动构建），DNS 托管在 Cloudflare，裸域 301 跳 www（Cloudflare 重定向规则）。域名注册在 Spaceship
-- 2026-07-16 之前为 Vercel 构建托管 + Spaceship DNS（裸域 308 跳 www），迁移过程见「已完成」；Vercel 项目暂保留兜底，待 DNS 收敛后下线（见「待办」）
+- 2026-07-16 之前为 Vercel 构建托管 + Spaceship DNS（裸域 308 跳 www），迁移过程见「已完成」。当天四大公共解析器（114/阿里/DNSPod/Google）确认收敛后，Vercel 项目、域名绑定与账户域名已全部删除，push main 现只触发 Cloudflare Pages 和 GitHub Actions 两个构建
 - https://listenergao.github.io 由 GitHub Actions + Pages 继续部署，作为免费冗余
 - 2026-07-07：GitHub Pages 侧已通过 `gh api` 绑定自定义域名 `www.listenergao.com`（**DNS 未改、仍指向 Vercel**），目的只有一个：让 github.io 全站 301 跳转到主域名，消除双域名重复内容对 SEO 的影响。已验证首页/文章页/sitemap 均 301 生效。**注意：GitHub Pages 设置页会显示 DNS check unsuccessful 警告，属预期，不要移除该域名或去“修复”DNS**
 - `_config.yml` url 已改为主域名；安装 hexo-generator-sitemap / hexo-generator-feed 生成 /sitemap.xml 和 /atom.xml
@@ -59,6 +58,7 @@
 
 ## 最近验证
 
+- 2026-07-16（傍晚）：Vercel 下线后全链路复测——www 经 Cloudflare 返回 200，裸域带路径 301 到 www 正确，github.io 备份 301 依旧；下线前 dig 确认 114/阿里/DNSPod/Google 四家解析器的 NS/www/MX 已全部收敛到 Cloudflare
 - 2026-07-16（下午）：邮件转发实测通过——163 → `hello@listenergao.com` → Gmail 收到（首测退信系 114DNS 缓存旧 Spaceship MX，缓存过期后自愈）；Catch-all 规则已启用（任意前缀转发到 Gmail）。另确认：经 Resend 发信时 163 显示「由 xxx@send.listenergao.com 代发」是收件方客户端对信封发件人（SES VERP 地址）与 From 不一致的固定展示，发件方无法消除，SPF/DKIM/DMARC 对齐不影响投递，暂不处理
 - 2026-07-16：Cloudflare 迁移验证——注册局 NS 已指 maxine/peyton.ns.cloudflare.com；www 经 Cloudflare 边缘返回 200（`server: cloudflare`，内容与迁移前一致）；裸域带路径/查询串 301 到 www 正确；MX 为 route1/2/3.mx.cloudflare.net、SPF 指 Cloudflare，Resend 记录原值在线。本机及部分国内解析器（114DNS）尚有旧缓存，Vercel 兜底中
 - 2026-07-14：视觉优化上线验证——commit `c4f5b1f` push 后 GitHub Actions Deploy Pages 成功（40s）；Vercel 主域名侧 www.listenergao.com 已生效：/css/custom.css 与 /img/banner.svg 均 200，首页 HTML 已引用新资源，custom.css 含入场动画规则
