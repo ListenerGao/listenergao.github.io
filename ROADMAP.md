@@ -32,7 +32,6 @@
 ## 待办
 
 - **Vercel 下线（预计 2026-07-18 后执行）**：等 DNS 全网收敛（迁移后约 48h）再删除 Vercel 项目与域名绑定，删除前先 dig 确认无解析器仍指向 Vercel；期间 push main 会同时触发 Cloudflare Pages / Vercel / GitHub Actions 三个构建，属预期
-- Email Routing 里 hello.listenergao.com 子域名处于「已启用」状态，来源待确认（不影响主域转发）
 - 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
 - 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
 
