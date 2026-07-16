@@ -32,8 +32,6 @@
 ## 待办
 
 - **Vercel 下线（预计 2026-07-18 后执行）**：等 DNS 全网收敛（迁移后约 48h）再删除 Vercel 项目与域名绑定，删除前先 dig 确认无解析器仍指向 Vercel；期间 push main 会同时触发 Cloudflare Pages / Vercel / GitHub Actions 三个构建，属预期
-- **邮件转发实测**：2026-07-16 首测 163 → `hello@listenergao.com` 退信，已确认原因是 114DNS 等国内解析器缓存旧 Spaceship MX（阿里/Google DNS 已返回新 MX），配置本身无误；等缓存过期后重测
-- Email Routing 的 Catch-all 规则建议启用（当前仅 `hello@` 单条规则，其余前缀会被拒收；截图时 Catch-all 为「丢弃+禁用」）
 - Email Routing 里 hello.listenergao.com 子域名处于「已启用」状态，来源待确认（不影响主域转发）
 - 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
 - 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
@@ -62,6 +60,7 @@
 
 ## 最近验证
 
+- 2026-07-16（下午）：邮件转发实测通过——163 → `hello@listenergao.com` → Gmail 收到（首测退信系 114DNS 缓存旧 Spaceship MX，缓存过期后自愈）；Catch-all 规则已启用（任意前缀转发到 Gmail）。另确认：经 Resend 发信时 163 显示「由 xxx@send.listenergao.com 代发」是收件方客户端对信封发件人（SES VERP 地址）与 From 不一致的固定展示，发件方无法消除，SPF/DKIM/DMARC 对齐不影响投递，暂不处理
 - 2026-07-16：Cloudflare 迁移验证——注册局 NS 已指 maxine/peyton.ns.cloudflare.com；www 经 Cloudflare 边缘返回 200（`server: cloudflare`，内容与迁移前一致）；裸域带路径/查询串 301 到 www 正确；MX 为 route1/2/3.mx.cloudflare.net、SPF 指 Cloudflare，Resend 记录原值在线。本机及部分国内解析器（114DNS）尚有旧缓存，Vercel 兜底中
 - 2026-07-14：视觉优化上线验证——commit `c4f5b1f` push 后 GitHub Actions Deploy Pages 成功（40s）；Vercel 主域名侧 www.listenergao.com 已生效：/css/custom.css 与 /img/banner.svg 均 200，首页 HTML 已引用新资源，custom.css 含入场动画规则
 - 2026-07-10：Google 收录确认——Search Console「网址检查」显示文章页（/2026/07/03/android-proguard-r8/）已编入索引，HTTPS 正常，收录待办关闭。`site:` 搜索暂查不到属该运算符的正常滞后，以 Search Console 为准
