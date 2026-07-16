@@ -2,7 +2,7 @@
 
 个人博客源码仓库。**源码即仓库**——文章、配置、部署流水线全部在 main 分支，push 即发布。
 
-- **主站**：https://www.listenergao.com （Vercel 构建与托管）
+- **主站**：https://www.listenergao.com （Cloudflare Pages 构建与托管，DNS 托管在 Cloudflare）
 - **备份部署**：https://listenergao.github.io （GitHub Actions 构建，部署到 GitHub Pages；对外全站 301 跳转到主站，避免双域名重复内容影响 SEO）
 
 ## 技术栈
@@ -24,11 +24,17 @@
 ## 部署架构
 
 ```
-push 到 main ─┬─→ Vercel 自动构建 ──→ www.listenergao.com（主站，DNS 指向 Vercel）
+push 到 main ─┬─→ Cloudflare Pages 自动构建 ──→ www.listenergao.com（主站）
               └─→ GitHub Actions（.github/workflows/pages.yml）──→ listenergao.github.io
                   （备份部署；Pages 设置绑定了自定义域名，使 github.io 301 跳转到主站。
                    DNS 未指向 GitHub，设置页的 DNS check 警告属预期，勿动）
 ```
+
+域名 listenergao.com 注册在 Spaceship，NS 指向 Cloudflare（2026-07-16 迁移，此前为 Vercel 构建托管）：
+
+- DNS、CDN、裸域 301 跳 www（重定向规则）均由 Cloudflare 承担
+- Cloudflare Pages 构建参数：构建命令 `npx hexo generate`，输出目录 `public`，环境变量 `NODE_VERSION=22`
+- `@listenergao.com` 收件转发用 Cloudflare Email Routing；Resend 发信记录（`send` 子域 MX/SPF、`resend._domainkey` DKIM）在 Cloudflare DNS 中维持原值
 
 ## 本地开发
 

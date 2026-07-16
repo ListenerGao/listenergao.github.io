@@ -18,6 +18,7 @@
 - 2026-07-03：恢复旧站 favicon（`source/img/icon_tab.png`，旧站实际引用的是它而非 favicon.png）
 - 2026-07-03：恢复评论系统 Utterances（仓库 `ListenerGao/blog-commit-utterances`，已确认仓库存在且开放 issues），本地截图验证评论框正常渲染
 - 2026-07-03：统计功能启用（页脚总访问量/总访客数 + 文章阅读次数），数据源用不蒜子 busuanzi。最初恢复了旧站 LeanCloud 配置，但实测该应用已被归档且 LeanCloud 将于 2027 年停服，经用户确认改用 busuanzi（计数从零开始，无历史数据迁移）。本地截图验证页脚计数正常显示（本地数字异常偏大是 busuanzi 已知现象，部署后正常）
+- 2026-07-16：**主站迁移 Vercel → Cloudflare**——①Spaceship NS 改指 Cloudflare（maxine/peyton.ns.cloudflare.com），9 条 DNS 记录先在 Cloudflare 原样复制后切换，注册局与公共 DNS 均已验证生效；②Email Routing 接管 `@` 收件（MX 换 route1/2/3.mx.cloudflare.net，删除 Spaceship efwd 旧 MX/SPF），目标地址 Gmail 已验证，`hello@` 规则活跃；Resend 发信记录（send MX/SPF、DKIM）原值保留并 dig 验证；③Cloudflare Pages 项目连接本仓库（`npx hexo generate` / `public` / NODE_VERSION=22），pages.dev 预览与主站内容一致（7 篇文章、custom.css/main.css 均 200）后绑定 www 自定义域，边缘节点验证 `server: cloudflare` 返回 200；④裸域 301 重定向规则（通配符 `https://listenergao.com/*` → `https://www.listenergao.com/${1}`，保留查询串）验证通过，http 裸域为 308 升 HTTPS + 301 到 www 两跳
 - 2026-07-14：全站视觉优化「清爽极简风」——`_config.fluid.yml` 覆盖配色（#fafafa 底 + teal #0d9488 强调色，浅/暗两套）、系统无衬线字体栈、代码高亮换 github/github-dark；新增 `source/img/banner.svg`（浅色渐变头图替换默认深色风景图，各页面 banner 高度压缩）和 `source/css/custom.css`（正文 17px/1.85 行距、标题节奏、代码块/引用块/导航栏/主面板细节、首屏入场动画：导航下滑/头图缩放沉降/标语与主面板上浮，respect prefers-reduced-motion；主题自带 .fade-in-up 缺时长实际不动已补齐）。配色约束：全站 ≤4 色（白底/灰黑文字/teal 强调/浅灰线），无紫色与彩虹渐变。本地构建通过 + 用户预览确认后发布
 
 ## 阻塞
@@ -30,12 +31,17 @@
 
 ## 待办
 
+- **Vercel 下线（预计 2026-07-18 后执行）**：等 DNS 全网收敛（迁移后约 48h）再删除 Vercel 项目与域名绑定，删除前先 dig 确认无解析器仍指向 Vercel；期间 push main 会同时触发 Cloudflare Pages / Vercel / GitHub Actions 三个构建，属预期
+- **邮件转发实测**：2026-07-16 首测 163 → `hello@listenergao.com` 退信，已确认原因是 114DNS 等国内解析器缓存旧 Spaceship MX（阿里/Google DNS 已返回新 MX），配置本身无误；等缓存过期后重测
+- Email Routing 的 Catch-all 规则建议启用（当前仅 `hello@` 单条规则，其余前缀会被拒收；截图时 Catch-all 为「丢弃+禁用」）
+- Email Routing 里 hello.listenergao.com 子域名处于「已启用」状态，来源待确认（不影响主域转发）
 - 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
 - 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
 
-## 域名与部署架构（2026-07-03 确认）
+## 域名与部署架构（2026-07-16 更新）
 
-- 主域名 https://www.listenergao.com 由 **Vercel** 服务（用户在 Vercel 连接本仓库自动构建，DNS 指向 Vercel；裸域名 308 跳 www）。选 Vercel 是为了中国大陆访问速度，DNS 托管在 Spaceship（注册商 NS）
+- 主域名 https://www.listenergao.com 由 **Cloudflare Pages** 服务（连接本仓库自动构建），DNS 托管在 Cloudflare，裸域 301 跳 www（Cloudflare 重定向规则）。域名注册在 Spaceship
+- 2026-07-16 之前为 Vercel 构建托管 + Spaceship DNS（裸域 308 跳 www），迁移过程见「已完成」；Vercel 项目暂保留兜底，待 DNS 收敛后下线（见「待办」）
 - https://listenergao.github.io 由 GitHub Actions + Pages 继续部署，作为免费冗余
 - 2026-07-07：GitHub Pages 侧已通过 `gh api` 绑定自定义域名 `www.listenergao.com`（**DNS 未改、仍指向 Vercel**），目的只有一个：让 github.io 全站 301 跳转到主域名，消除双域名重复内容对 SEO 的影响。已验证首页/文章页/sitemap 均 301 生效。**注意：GitHub Pages 设置页会显示 DNS check unsuccessful 警告，属预期，不要移除该域名或去“修复”DNS**
 - `_config.yml` url 已改为主域名；安装 hexo-generator-sitemap / hexo-generator-feed 生成 /sitemap.xml 和 /atom.xml
@@ -56,6 +62,7 @@
 
 ## 最近验证
 
+- 2026-07-16：Cloudflare 迁移验证——注册局 NS 已指 maxine/peyton.ns.cloudflare.com；www 经 Cloudflare 边缘返回 200（`server: cloudflare`，内容与迁移前一致）；裸域带路径/查询串 301 到 www 正确；MX 为 route1/2/3.mx.cloudflare.net、SPF 指 Cloudflare，Resend 记录原值在线。本机及部分国内解析器（114DNS）尚有旧缓存，Vercel 兜底中
 - 2026-07-14：视觉优化上线验证——commit `c4f5b1f` push 后 GitHub Actions Deploy Pages 成功（40s）；Vercel 主域名侧 www.listenergao.com 已生效：/css/custom.css 与 /img/banner.svg 均 200，首页 HTML 已引用新资源，custom.css 含入场动画规则
 - 2026-07-10：Google 收录确认——Search Console「网址检查」显示文章页（/2026/07/03/android-proguard-r8/）已编入索引，HTTPS 正常，收录待办关闭。`site:` 搜索暂查不到属该运算符的正常滞后，以 Search Console 为准
 - 2026-07-07：github.io → www 301 跳转验证通过（首页、文章页、sitemap.xml 均 301 至 www.listenergao.com，Fastly 缓存过期后全量生效）；www.listenergao.com 返回 200 不受影响
