@@ -21,6 +21,8 @@
 - 2026-07-16：**主站迁移 Vercel → Cloudflare**——①Spaceship NS 改指 Cloudflare（maxine/peyton.ns.cloudflare.com），9 条 DNS 记录先在 Cloudflare 原样复制后切换，注册局与公共 DNS 均已验证生效；②Email Routing 接管 `@` 收件（MX 换 route1/2/3.mx.cloudflare.net，删除 Spaceship efwd 旧 MX/SPF），目标地址 Gmail 已验证，`hello@` 规则活跃；Resend 发信记录（send MX/SPF、DKIM）原值保留并 dig 验证；③Cloudflare Pages 项目连接本仓库（`npx hexo generate` / `public` / NODE_VERSION=22），pages.dev 预览与主站内容一致（7 篇文章、custom.css/main.css 均 200）后绑定 www 自定义域，边缘节点验证 `server: cloudflare` 返回 200；④裸域 301 重定向规则（通配符 `https://listenergao.com/*` → `https://www.listenergao.com/${1}`，保留查询串）验证通过，http 裸域为 308 升 HTTPS + 301 到 www 两跳
 - 2026-07-14：全站视觉优化「清爽极简风」——`_config.fluid.yml` 覆盖配色（#fafafa 底 + teal #0d9488 强调色，浅/暗两套）、系统无衬线字体栈、代码高亮换 github/github-dark；新增 `source/img/banner.svg`（浅色渐变头图替换默认深色风景图，各页面 banner 高度压缩）和 `source/css/custom.css`（正文 17px/1.85 行距、标题节奏、代码块/引用块/导航栏/主面板细节、首屏入场动画：导航下滑/头图缩放沉降/标语与主面板上浮，respect prefers-reduced-motion；主题自带 .fade-in-up 缺时长实际不动已补齐）。配色约束：全站 ≤4 色（白底/灰黑文字/teal 强调/浅灰线），无紫色与彩虹渐变。本地构建通过 + 用户预览确认后发布
 
+- 2026-07-28：修复 Google Search Console「网页会自动重定向」告警——sitemap 中关于页 URL 为 `/about/index.html`，而 Cloudflare Pages 会把它 308 规范化到 `/about/`，Google 抓到重定向便不予索引（其余 15 条 sitemap URL 均 200，不受影响）。根因是 `_config.yml` 的 `pretty_urls.trailing_index: true` 让 page 类型 permalink 保留 index.html，已改为 `false`。本地 `hexo clean && hexo generate` 验证：sitemap.xml / atom.xml 中 index.html 出现次数为 0，关于页 loc 变为 `https://www.listenergao.com/about/`，页面内链无 index.html 残留
+
 ## 阻塞
 
 - 无
@@ -31,6 +33,7 @@
 
 ## 待办
 
+- `trailing_index: false` 发布上线后，去 Search Console 重新提交 sitemap.xml，并对 `https://www.listenergao.com/about/` 做一次「请求编入索引」，确认告警消除
 - 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
 - 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
 
