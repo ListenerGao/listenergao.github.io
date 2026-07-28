@@ -33,7 +33,8 @@
 
 ## 待办
 
-- `trailing_index: false` 发布上线后，去 Search Console 重新提交 sitemap.xml，并对 `https://www.listenergao.com/about/` 做一次「请求编入索引」，确认告警消除
+- 待确认：`https://www.listenergao.com/about/` 是否被收录（2026-07-28 已重新提交 sitemap.xml 并请求编入索引，约 3~5 天后用「网址检查」确认显示「网址在 Google 上」）。注意判断标准不是索引报告里「网页会自动重定向」清零——`/about/index.html` 会长期停留在该分类，属预期
+- 待确认：索引报告「已抓取 - 尚未编入索引」1 个页面的具体 URL 未查（Google 主动决定暂不收录，非配置问题；疑似 Hello-Hexo 示例文章或单篇 tags/categories 页）
 - 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
 - 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
 
@@ -60,6 +61,8 @@
 - 2026-07-03：**发布上线**。commit `48ba7a8`（重建）+ `f8fc260`（Node 22）+ `c133b4b`（lockfile 换官方源），Actions 构建部署成功
 
 ## 最近验证
+
+- 2026-07-28：`trailing_index: false` 上线验证——commit `8d12068` push 后 Cloudflare Pages 构建生效，线上 sitemap.xml 全文件无 index.html，关于页 loc 为 `https://www.listenergao.com/about/`，该 URL 直连返回 200 无重定向。Search Console 侧已由用户重新提交 sitemap.xml 并对 `/about/` 请求编入索引，收录结果待观察
 
 - 2026-07-16（傍晚）：Vercel 下线后全链路复测——www 经 Cloudflare 返回 200，裸域带路径 301 到 www 正确，github.io 备份 301 依旧；下线前 dig 确认 114/阿里/DNSPod/Google 四家解析器的 NS/www/MX 已全部收敛到 Cloudflare
 - 2026-07-16（下午）：邮件转发实测通过——163 → `hello@listenergao.com` → Gmail 收到（首测退信系 114DNS 缓存旧 Spaceship MX，缓存过期后自愈）；Catch-all 规则已启用（任意前缀转发到 Gmail）。另确认：经 Resend 发信时 163 显示「由 xxx@send.listenergao.com 代发」是收件方客户端对信封发件人（SES VERP 地址）与 From 不一致的固定展示，发件方无法消除，SPF/DKIM/DMARC 对齐不影响投递，暂不处理
