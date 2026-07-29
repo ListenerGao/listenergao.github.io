@@ -33,7 +33,6 @@
 
 ## 待办
 
-- 待确认：`https://www.listenergao.com/about/` 是否被收录（2026-07-28 已重新提交 sitemap.xml 并请求编入索引，约 3~5 天后用「网址检查」确认显示「网址在 Google 上」）。注意判断标准不是索引报告里「网页会自动重定向」清零——`/about/index.html` 会长期停留在该分类，属预期
 - 站点信息完善（slogan、关于页正文、about.intro 等占位内容待用户自定义）
 - 旧站「友链」页未恢复（旧站有 /links/，如需要用 `hexo new page links` 创建）
 
@@ -61,6 +60,7 @@
 
 ## 最近验证
 
+- 2026-07-29：**关于页收录成功**——GSC 网址检查 `https://www.listenergao.com/about/` 显示「网址已收录到 Google / 网页已编入索引 / 网页采用 HTTPS 协议」，距 07-28 请求编入索引仅 1 天。「网页会自动重定向」告警闭环，无后续动作
 - 2026-07-28：Search Console 索引报告三条「未编入索引」原因已全部定性，其中两条属预期无需处理——①「网页会自动重定向」1 页为 `/about/index.html`，修复后 sitemap 不再提交它，该 URL 本身保持 308 是正确的规范化；②「已抓取 - 尚未编入索引」1 页为 `https://www.listenergao.com/atom.xml`，RSS 源经页面 head 的 alternate link 被发现，非网页内容不予索引属正确行为，sitemap 中本就未提交；③「已发现 - 尚未编入索引」为 0 页
 - 2026-07-28：`trailing_index: false` 上线验证——commit `8d12068` push 后 Cloudflare Pages 构建生效，线上 sitemap.xml 全文件无 index.html，关于页 loc 为 `https://www.listenergao.com/about/`，该 URL 直连返回 200 无重定向。Search Console 侧已由用户重新提交 sitemap.xml 并对 `/about/` 请求编入索引，收录结果待观察
 
