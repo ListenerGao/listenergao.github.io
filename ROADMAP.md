@@ -60,6 +60,7 @@
 
 ## 最近验证
 
+- 2026-08-10：Search Console 三条告警复查，均无需改代码——①**新增「未找到 404」1 页为 `https://www.listenergao.com/2022/03/11/hello-world/`**，旧站遗留 URL，当前 `source/_posts/` 无此文、线上 sitemap 16 条中无它、`grep -rn "hello-world" source/` 无任何内链，Google 系回查 2022 年旧索引发现（首次检测 08-05，末次抓取 07-30），内容已不存在返回 404 即正确信号，等其自然掉出索引，不为单个 URL 配 410 规则；②「网页会自动重定向」`/about/index.html` 是 07-28 修复前的历史数据（图表数据截止 07-28），实测仍 308 → `/about/` 属正确规范化，GSC 侧点「验证修正情况」即可；③「已抓取 - 尚未编入索引」`/atom.xml` 实测 200，feed 非网页内容不予索引，长期挂在报告中属正常，忽略
 - 2026-07-29：**关于页收录成功**——GSC 网址检查 `https://www.listenergao.com/about/` 显示「网址已收录到 Google / 网页已编入索引 / 网页采用 HTTPS 协议」，距 07-28 请求编入索引仅 1 天。「网页会自动重定向」告警闭环，无后续动作
 - 2026-07-28：Search Console 索引报告三条「未编入索引」原因已全部定性，其中两条属预期无需处理——①「网页会自动重定向」1 页为 `/about/index.html`，修复后 sitemap 不再提交它，该 URL 本身保持 308 是正确的规范化；②「已抓取 - 尚未编入索引」1 页为 `https://www.listenergao.com/atom.xml`，RSS 源经页面 head 的 alternate link 被发现，非网页内容不予索引属正确行为，sitemap 中本就未提交；③「已发现 - 尚未编入索引」为 0 页
 - 2026-07-28：`trailing_index: false` 上线验证——commit `8d12068` push 后 Cloudflare Pages 构建生效，线上 sitemap.xml 全文件无 index.html，关于页 loc 为 `https://www.listenergao.com/about/`，该 URL 直连返回 200 无重定向。Search Console 侧已由用户重新提交 sitemap.xml 并对 `/about/` 请求编入索引，收录结果待观察
