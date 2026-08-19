@@ -9,6 +9,11 @@ apple_touch_icon: /img/icon_tab.png
 navbar:
   blog_title: ListenerGao's Blog
 
+# 输出 canonical 规范网址，把带查询参数（如 ?utm_source=xxx）的重复 URL 归并到干净地址
+# 依赖 _config.yml 中的 url，输出形式与 sitemap 一致（末尾带 /，不含 index.html）
+canonical:
+  enable: true
+
 # ---------- 视觉：清爽极简 ----------
 # 白底大留白 + 青蓝（teal）单一强调色，配套细节见 source/css/custom.css
 custom_css:
