@@ -24,17 +24,25 @@
 - 2026-07-28：修复 Google Search Console「网页会自动重定向」告警——sitemap 中关于页 URL 为 `/about/index.html`，而 Cloudflare Pages 会把它 308 规范化到 `/about/`，Google 抓到重定向便不予索引（其余 15 条 sitemap URL 均 200，不受影响）。根因是 `_config.yml` 的 `pretty_urls.trailing_index: true` 让 page 类型 permalink 保留 index.html，已改为 `false`。本地 `hexo clean && hexo generate` 验证：sitemap.xml / atom.xml 中 index.html 出现次数为 0，关于页 loc 变为 `https://www.listenergao.com/about/`，页面内链无 index.html 残留
 - 2026-08-19：`_config.fluid.yml` 开启 `canonical.enable: true`（主题默认 false），全站页面 head 输出 `<link rel="canonical">`。动机是归并带查询参数的重复 URL——实测 `https://www.listenergao.com/about/?utm_source=test` 返回 200，Google 可能当独立页面收录。Fluid 模板 `node_modules/hexo-theme-fluid/layout/_partials/head.ejs:22` 用 `page.canonical_path` 去掉 index.html 再拼 `config.url`，输出形式与 sitemap 完全一致。本地 `hexo clean && hexo generate` 通过，六类页面 canonical 均正确（首页 / `/about/` / `/archives/` / 文章页 / `/tags/Android/` / `/404.html`），当前文章数未触发分页故无 page/2。**此项解决不了「网页会自动重定向」告警**（Google 抓 `/about/index.html` 拿到 308，读不到 head）。上线验证待办
 
+- 2026-08-28：**图片上传页 `/upload-img/` 上线**（commit `e4f3107` / `c948955` / `b069063`）。背景：R2 图床（桶 `img` + 自定义域 `img.listenergao.com`，出口流量免费、10GB 免费额度）当天刚搭好，但只能命令行上传，写文章插图不顺手，故加一个网页入口，支持拖拽 / Cmd+V 粘贴 / 选文件。
+
+  **实现**：`source/upload-img/index.html`（纯原生 HTML/CSS/JS，零外部依赖，沿用站点 teal 配色与系统字体栈，输出公开链接与 Markdown 引用各带一键复制，head 带 `noindex, nofollow`）+ `functions/api/upload.js`（Cloudflare Pages Functions，经 R2 binding 写桶，浏览器侧不接触任何密钥；类型白名单 + 20MB 上限 + 同名不覆盖）。`_config.yml` 的 `skip_render` 改为列表并加入 `upload-img/index.html`，让页面原样输出、不套 Fluid 模板（产物与源文件逐字节一致，且不进 sitemap）。存储路径 `年/月/日[/自定义目录]/<毫秒时间戳>.<ext>`，后缀由 MIME 决定而非原文件名。
+
+  **鉴权 = Cloudflare Access**，边缘拦截，代码里不存在任何凭证。Zero Trust 团队域 `listenergao.cloudflareaccess.com`，应用「图片上传」策略 `仅本人`（Emails = 本人邮箱），会话 1 个月。⚠️ **安全边界**：应用目标必须同时覆盖 `www.listenergao.com/upload-img*` 与 `www.listenergao.com/api/*`，漏掉后者接口即公开可写。改 Access 配置后必须复验：未登录下 `curl -o /dev/null -w '%{http_code}' -X POST https://www.listenergao.com/api/upload` 应为 **302**（被拦到登录页），不能是 4xx/5xx。
+
+  **上线验证**：未登录 `/upload-img/` 与 `/api/upload` 均 302；博客首页 / `/about/` / 文章页 / `sitemap.xml` 均 200 未受影响；登录后网页端实际上传成功，对象落桶、公开 URL 200、`cf-cache-status` 二次访问为 HIT（走 CDN 缓存，不消耗 R2 读额度）。
+
+  **踩坑三条**：① Access 注入给 origin 的 `Cf-Access-Authenticated-User-Email` 头**不会传到 Pages Functions**——初版拿它做兜底校验，导致登录后仍 401、上传被挡死（`c948955` 移除；要保留有效兜底须完整校验 JWT 签名与 AUD，只判 `CF_Authorization` cookie 存在等于没判，可伪造）。② **Workers 运行在 UTC**，路径按日分目录后若直接 `new Date()`，北京时间晚 8 点后上传的图会落到前一天目录，故固定用 `Intl.DateTimeFormat` 取 `Asia/Shanghai`。③ 本地跑 `npx wrangler pages dev` 需 **node 22**（默认 node 20 直接拒绝启动），且需 `--compatibility-date=2026-08-11`，否则 workerd 二进制报「不支持当天日期」。
+
+  **另一个入口**：命令行脚本 `~/.config/r2/r2img.mjs`（全局工具，不在本仓库），零依赖、用 node 内置 crypto 手签 S3 SigV4 请求，凭证在 `~/.config/r2/img.env`（600 权限，不进任何仓库）。用法 `node ~/.config/r2/r2img.mjs put <图片> [目录]` 上传、`ls [前缀]` 列举，路径与文件名规则与网页版保持一致——**改任一侧的路径规则时，另一侧需同步**。
+
 ## 阻塞
 
 - 无
 
 ## 进行中
 
-- 2026-08-28：图片上传页 `/upload-img/`（**代码完成、本地已验证，待 Cloudflare Access 配置与上线**）。背景：R2 图床（桶 `img` + 自定义域 `img.listenergao.com`）已建好，但只能命令行上传，写文章插图不顺手。实现：`source/upload-img/index.html`（纯原生 HTML/CSS/JS，零外部依赖，支持拖拽 / Cmd+V 粘贴 / 选文件，输出公开链接与 Markdown 引用，head 带 `noindex, nofollow`）+ `functions/api/upload.js`（Cloudflare Pages Functions，经 R2 binding 写桶，浏览器侧不接触任何密钥）。`_config.yml` 的 `skip_render` 改为列表并加入 `upload-img/index.html`，让页面原样输出、不套 Fluid 模板。
-
-  鉴权方案初版用「口令 + 加密环境变量 `UPLOAD_TOKEN`」，因需自行保管口令，改为 **Cloudflare Access 邮箱验证**：鉴权在边缘完成，页面与接口的未认证请求根本到不了 Functions，代码里不存在任何凭证。Functions 侧保留一层兜底——检查 Access 注入的 `Cf-Access-Authenticated-User-Email` 头，防止 Access 应用路径漏配 `/api/*` 导致接口裸奔（放行哪些邮箱由 Access 策略决定，代码不硬编码邮箱）。
-
-  本地验证：`hexo clean && generate` 通过、产物与源文件逐字节一致、未进 sitemap；`npx wrangler pages dev`（需 node 22，本地默认 node 20 跑不起来；另需 `--compatibility-date=2026-08-11`，否则 workerd 二进制报不支持当天日期）跑通——无认证头 401 / 有认证头非图片 415 / 无文件 400 / 正常上传 200 返回正确 key 与 URL / 同名重传自动加随机后缀不覆盖；浏览器实测拖拽上传与结果区（缩略图、链接、Markdown 复制按钮）正常，会话过期提示条正常。**待办**：① 开通 Zero Trust 并建 Access 应用，路径须同时覆盖 `/upload-img*` 与 `/api/*`；② push main 上线后做线上端到端验证，含未登录访问接口应被 Access 拦截
+- 无
 
 ## 待办
 
