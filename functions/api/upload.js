@@ -1,9 +1,19 @@
 // Cloudflare Pages Functions — 图片上传接口
 // 依赖 Pages 项目侧配置：R2 绑定 IMG_BUCKET → 存储桶 img
 //
-// 鉴权由 Cloudflare Access 承担：Access 应用必须同时覆盖 /upload-img* 和 /api/*，
-// 未认证请求在边缘就被拦下，根本到不了这里。下面对认证头的检查是兜底——
-// 万一 Access 的路径配漏了 /api/*，这里仍然拒绝，而不是让接口裸奔。
+// 鉴权完全由 Cloudflare Access 在边缘承担，这里不再自行校验身份。
+//
+// ⚠️ 安全边界：Access 应用「图片上传」的目标必须同时覆盖这两条路径，
+//    www.listenergao.com/upload-img*  和  www.listenergao.com/api/*
+//    漏掉后者，这个接口就是公开可写的。改 Access 配置后务必验证：
+//      curl -o /dev/null -w '%{http_code}\n' -X POST https://www.listenergao.com/api/upload
+//    未登录状态下必须是 302（被拦到登录页），不能是 4xx/5xx。
+//
+// 注：曾尝试在此校验 Access 注入的 Cf-Access-Authenticated-User-Email 头作为兜底，
+//    实测该头不会传到 Pages Functions（请求已过 Access 却读不到，导致正常上传被拒）。
+//    只检查 CF_Authorization cookie 存在与否等于没检查（可伪造），要做就得完整校验
+//    JWT 签名与 AUD，成本高于收益，故移除。
+//
 // 公开访问地址由 PUBLIC_BASE 拼出，图片实际由 img.listenergao.com 提供
 
 const PUBLIC_BASE = 'https://img.listenergao.com'
@@ -36,11 +46,6 @@ const cleanSlug = slug =>
 
 export async function onRequestPost({ request, env }) {
   if (!env.IMG_BUCKET) return json({ error: '服务端未绑定 IMG_BUCKET' }, 500)
-
-  // Access 认证通过后会注入这个头，具体放行哪些邮箱由 Access 策略决定
-  if (!request.headers.get('Cf-Access-Authenticated-User-Email')) {
-    return json({ error: '未经 Cloudflare Access 认证' }, 401)
-  }
 
   let form
   try {
