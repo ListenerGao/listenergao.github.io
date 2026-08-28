@@ -115,14 +115,14 @@ button:hover { background: var(--accent-hover); }
 <body>
 <div class="wrap">
   <h1>图片上传</h1>
-  <p class="lead">上传到 R2 图床，返回公开链接和 Markdown 引用。</p>
+  <p class="lead">上传到 Cloudflare R2 图床，返回公开链接和 Markdown 引用。</p>
 
   <div id="notice">登录状态已过期，<a href="" onclick="location.reload();return false">刷新页面</a>重新登录后再试。</div>
 
   <div>
     <div class="slug-row">
       <label for="slug">归类目录（可选）</label>
-      <input type="text" id="slug" placeholder="例如 ai-music-01">
+      <input type="text" id="slug" placeholder="请输入存储路径">
       <div class="hint">留空则存到 <code id="path-preview"></code>，填了则多一层子目录。</div>
     </div>
 
@@ -148,9 +148,11 @@ button:hover { background: var(--accent-hover); }
   const results = document.getElementById('results')
   const slugInput = document.getElementById('slug')
 
-  const now = new Date()
+  // 与接口保持一致：固定按北京时间取日期，避免在其他时区下预览和实际落点对不上
   document.getElementById('path-preview').textContent =
-    now.getFullYear() + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/'
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+    }).format(new Date()).replaceAll('-', '/')
 
   function copyButton(text, label) {
     const row = document.createElement('div')

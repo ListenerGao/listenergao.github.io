@@ -19,9 +19,15 @@
 const PUBLIC_BASE = 'https://img.listenergao.com'
 const MAX_SIZE = 20 * 1024 * 1024
 
-const ALLOWED_TYPES = new Set([
-  'image/png', 'image/jpeg', 'image/gif', 'image/webp',
-  'image/svg+xml', 'image/avif',
+// 兼作类型白名单和扩展名来源：文件名取毫秒时间戳，后缀由 MIME 决定，
+// 不依赖原文件名（剪贴板截图往往没有可靠的文件名）
+const EXT_BY_TYPE = new Map([
+  ['image/png', '.png'],
+  ['image/jpeg', '.jpg'],
+  ['image/gif', '.gif'],
+  ['image/webp', '.webp'],
+  ['image/svg+xml', '.svg'],
+  ['image/avif', '.avif'],
 ])
 
 const json = (data, status = 200) =>
@@ -30,19 +36,15 @@ const json = (data, status = 200) =>
     headers: { 'content-type': 'application/json;charset=UTF-8' },
   })
 
-// 与命令行脚本 ~/.config/r2/r2img.mjs 的 cleanName 保持一致
-function cleanName(name) {
-  const dot = name.lastIndexOf('.')
-  const ext = dot > 0 ? name.slice(dot).toLowerCase() : ''
-  const stem = (dot > 0 ? name.slice(0, dot) : name)
-    .toLowerCase()
-    .replace(/[^\w一-龥-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-  return (stem || 'file') + ext
-}
-
 const cleanSlug = slug =>
   slug.toLowerCase().replace(/[^\w一-龥-]+/g, '-').replace(/^-+|-+$/g, '')
+
+// Workers 运行在 UTC，直接用 new Date() 会让北京时间晚 8 点后上传的图落到前一天的目录。
+// 固定按 Asia/Shanghai 取年月日，与站点 _config.yml 的 timezone 保持一致。
+const todayParts = () =>
+  new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(new Date()).split('-')
 
 export async function onRequestPost({ request, env }) {
   if (!env.IMG_BUCKET) return json({ error: '服务端未绑定 IMG_BUCKET' }, 500)
@@ -56,20 +58,17 @@ export async function onRequestPost({ request, env }) {
 
   const file = form.get('file')
   if (!file || typeof file === 'string') return json({ error: '没有收到文件' }, 400)
-  if (!ALLOWED_TYPES.has(file.type)) return json({ error: `不支持的类型: ${file.type || '未知'}` }, 415)
+  const ext = EXT_BY_TYPE.get(file.type)
+  if (!ext) return json({ error: `不支持的类型: ${file.type || '未知'}` }, 415)
   if (file.size > MAX_SIZE) return json({ error: `文件超过 ${MAX_SIZE / 1024 / 1024} MB` }, 413)
 
-  const now = new Date()
   const slug = cleanSlug(String(form.get('slug') || ''))
-  const dir = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), slug]
-    .filter(Boolean).join('/')
+  const dir = [...todayParts(), slug].filter(Boolean).join('/')
 
-  let key = `${dir}/${cleanName(file.name || 'image.png')}`
-  // 同名不覆盖：已存在就在文件名后加随机后缀
+  let key = `${dir}/${Date.now()}${ext}`
+  // 同一毫秒内并发上传会撞名，撞了就加随机后缀，绝不覆盖已有对象
   if (await env.IMG_BUCKET.head(key)) {
-    const dot = key.lastIndexOf('.')
-    const suffix = Math.random().toString(36).slice(2, 6)
-    key = dot > 0 ? `${key.slice(0, dot)}-${suffix}${key.slice(dot)}` : `${key}-${suffix}`
+    key = `${dir}/${Date.now()}-${Math.random().toString(36).slice(2, 6)}${ext}`
   }
 
   await env.IMG_BUCKET.put(key, file.stream(), {
