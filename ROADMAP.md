@@ -30,7 +30,11 @@
 
 ## 进行中
 
-- 无
+- 2026-08-28：图片上传页 `/upload-img/`（**代码完成、本地已验证，待 Cloudflare Access 配置与上线**）。背景：R2 图床（桶 `img` + 自定义域 `img.listenergao.com`）已建好，但只能命令行上传，写文章插图不顺手。实现：`source/upload-img/index.html`（纯原生 HTML/CSS/JS，零外部依赖，支持拖拽 / Cmd+V 粘贴 / 选文件，输出公开链接与 Markdown 引用，head 带 `noindex, nofollow`）+ `functions/api/upload.js`（Cloudflare Pages Functions，经 R2 binding 写桶，浏览器侧不接触任何密钥）。`_config.yml` 的 `skip_render` 改为列表并加入 `upload-img/index.html`，让页面原样输出、不套 Fluid 模板。
+
+  鉴权方案初版用「口令 + 加密环境变量 `UPLOAD_TOKEN`」，因需自行保管口令，改为 **Cloudflare Access 邮箱验证**：鉴权在边缘完成，页面与接口的未认证请求根本到不了 Functions，代码里不存在任何凭证。Functions 侧保留一层兜底——检查 Access 注入的 `Cf-Access-Authenticated-User-Email` 头，防止 Access 应用路径漏配 `/api/*` 导致接口裸奔（放行哪些邮箱由 Access 策略决定，代码不硬编码邮箱）。
+
+  本地验证：`hexo clean && generate` 通过、产物与源文件逐字节一致、未进 sitemap；`npx wrangler pages dev`（需 node 22，本地默认 node 20 跑不起来；另需 `--compatibility-date=2026-08-11`，否则 workerd 二进制报不支持当天日期）跑通——无认证头 401 / 有认证头非图片 415 / 无文件 400 / 正常上传 200 返回正确 key 与 URL / 同名重传自动加随机后缀不覆盖；浏览器实测拖拽上传与结果区（缩略图、链接、Markdown 复制按钮）正常，会话过期提示条正常。**待办**：① 开通 Zero Trust 并建 Access 应用，路径须同时覆盖 `/upload-img*` 与 `/api/*`；② push main 上线后做线上端到端验证，含未登录访问接口应被 Access 拦截
 
 ## 待办
 
